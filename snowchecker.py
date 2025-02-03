@@ -8,28 +8,29 @@ page = requests.get(URL)
 
 soup = BeautifulSoup(page.content, "html.parser")
 
-news_items = soup.find_all("div", class_="nectar-post-grid-item")
-
 def discordBot(title, bodyText, confirmed):
-    if confirmed == False:
+    if confirmed == 1:
         message = f"❄ **Possible Snow Day Alert!** ❄\n\n**{title.text.strip()}**\n{bodyText.text.strip()}\n\n @everyone"
-    else:
-        message = f"❄ **Confirmed Snow Day Alert!** ❄\n\n**{title.text.strip()}**\n{bodyText.text.strip()}\n\n @everyone"  
+    elif confirmed == 2:
+        message = f"❄ **Confirmed Snow Day Alert!** ❄\n\n**{title.text.strip()}**\n{bodyText.text.strip()}\n\n @everyone" 
+    elif confirmed == 3:
+        message = ("No news article mentioning 'snow' in the title or body") 
     payload = {"content": message}
     requests.post(DISCORD_WEBHOOK_URL, json=payload)
     print("Sent webhook!")
 
 
-for item in news_items:
-    heading = item.find("h2", class_="post-heading")
-    body = item.find("span", class_="meta-excerpt")
-        
-    title = heading.text.strip().lower()
-    bodyText = body.text.strip().lower()
+news_item = soup.find("div", class_="nectar-post-grid-item")
 
-    if "snow day" in title or "cancel" in bodyText or "cancelled" in bodyText or "no school" in bodyText:
-        discordBot(heading, body, True)
-    elif "snow" in title or "snow" in bodyText:
-        discordBot(heading, body, False)
-    else:
-        print("No article mentioning 'snow' in the title or body")
+heading = news_item.find("h2", class_="post-heading")
+body = news_item.find("span", class_="meta-excerpt")
+        
+title = heading.text.strip().lower()
+bodyText = body.text.strip().lower()
+
+if "snow day" in title or "cancel" in bodyText or "cancelled" in bodyText or "no school" in bodyText:
+    discordBot(heading, body, 1)
+elif "snow" in title or "snow" in bodyText:
+    discordBot(heading, body, 2)
+else:
+    discordBot(heading, body, 3)
