@@ -5,4 +5,5 @@ The purpose of the project is to make it simpler for students to know if it is a
 Note: The project uses the Python library BeautifulSoup to scrape the HTML data from the websites.
 
 STM Website: https://stthomasmorecollegiate.ca/news/
+
 Burnaby Schools Website: https://burnabyschools.ca/
