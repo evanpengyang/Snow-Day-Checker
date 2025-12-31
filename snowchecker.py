@@ -15,7 +15,7 @@ burnabypage = requests.get(BURNABY_URL)
 stmsoup = BeautifulSoup(stmpage.content, "html.parser")
 burnabysoup = BeautifulSoup(burnabypage.content, "html.parser")
 
-scrape_rules = { #nested dictionary allows for scraper function to be reused for many different websites
+scrape_rules = {
     "stmc": {
         "container": ("div", "nectar-post-grid-item"),
         "heading": ("h2", "post-heading"),
@@ -29,7 +29,7 @@ scrape_rules = { #nested dictionary allows for scraper function to be reused for
 }
 
 def discordBot(title, bodyText, alert_type, bot_type = 0):
-    bot_type = 0 if bot_type == stmsoup else 1 #checks if whichSoup is STMSoup, that way it can differntiate between which integration to use
+    bot_type = 0 if bot_type == stmsoup else 1
 
     messages = [
         f"❄ **Confirmed Snow Day Alert!** ❄\n\n**{title.text.strip()}**\n{bodyText.text.strip()}\n\n @everyone",
@@ -38,14 +38,14 @@ def discordBot(title, bodyText, alert_type, bot_type = 0):
     ]
 
     payload = {"content": messages[alert_type]}
-    requests.post(webhook_list[bot_type], json=payload) #posts the webhook to the discord server via different integrations depending on which webpage it scraped 'Burnaby' or 'STM'
+    requests.post(webhook_list[bot_type], json=payload)
     print(f"Sent webhook to {['STM', 'Burnaby'][bot_type]}!")
 
 
 def scraper(whichSoup):
-    rules = scrape_rules["stmc"] if whichSoup == stmsoup else scrape_rules["burnaby"] #decides whether to take dictionary values from stmc or burnaby
+    rules = scrape_rules["stmc"] if whichSoup == stmsoup else scrape_rules["burnaby"]
 
-    news_item = whichSoup.find(*rules["container"]) # * unpacks the tuple in the container part of the nested dictionaries
+    news_item = whichSoup.find(*rules["container"]
     heading = news_item.find(*rules["heading"])
     body = news_item.find(*rules["body"])
             
@@ -61,4 +61,5 @@ def scraper(whichSoup):
 
 
 scraper(stmsoup)
+
 scraper(burnabysoup)
